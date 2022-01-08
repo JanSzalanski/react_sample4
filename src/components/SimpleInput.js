@@ -1,4 +1,3 @@
-import { useState } from "react";
 import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
@@ -11,11 +10,14 @@ const SimpleInput = (props) => {
     resetInput: resetName,
   } = useInput((value) => value.trim() !== "");
 
-  const [enteredMail, setEnteredMail] = useState("");
-  const [enteredMailTouched, setEteredMailTouched] = useState(false);
-
-  const enteredMailIsValid = enteredMail.includes("@");
-  const nameMailIsInvalid = !enteredMail && enteredMailTouched;
+  const {
+    value: enteredMail,
+    isValid: enteredMailIsValid,
+    hasError: mailInputHasError,
+    valueChangeHandler: mailChangedHandler,
+    inputBlurHandler: mailChangedBlurHandler,
+    resetInput: resetmMail,
+  } = useInput((value) => value.includes("@"));
 
   let formIsValid = false;
 
@@ -31,24 +33,11 @@ const SimpleInput = (props) => {
     }
 
     resetName();
-
-    setEnteredMail("");
-    setEteredMailTouched(false);
+    resetmMail();
   };
-  //////////////////////////////////////
-
-  const mailInputChangeHandler = (event) => {
-    setEnteredMail(event.target.value);
-  };
-
-  const mailInputBlurHandler = (event) => {
-    setEteredMailTouched(true);
-  };
-
-  ///////////////////////////////////
 
   const nameInputClasses = nameInputHasError ? "form-control invalid" : "form-control";
-  const nameMailClasses = nameMailIsInvalid ? "form-control invalid" : "form-control";
+  const nameMailClasses = mailInputHasError ? "form-control invalid" : "form-control";
 
   return (
     <form onSubmit={formSubmissionHandler}>
@@ -68,11 +57,11 @@ const SimpleInput = (props) => {
         <input
           type="email"
           id="email"
-          onChange={mailInputChangeHandler}
-          onBlur={mailInputBlurHandler}
+          onChange={mailChangedHandler}
+          onBlur={mailChangedBlurHandler}
           value={enteredMail}
         />
-        {nameMailIsInvalid && <p className="error-text">Please enter a valid email addres </p>}
+        {mailInputHasError && <p className="error-text">Please enter a valid email addres </p>}
       </div>
       <div className="form-actions">
         <button disabled={!formIsValid}>Submit</button>
